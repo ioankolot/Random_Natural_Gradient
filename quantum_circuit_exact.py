@@ -38,5 +38,3 @@ class Qcir_Exact():
         elif measure_basis == 'Y':
             self.qcir.rz(-np.pi/2, range(self.number_of_qubits))
             self.qcir.h(range(self.number_of_qubits))
-        
-
