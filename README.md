@@ -3,8 +3,6 @@
 Qiskit implementation of the paper "Random Natural Gradient" (arXiv:2311.04135).
 Authors: Ioannis Kolotouros and Petros Wallden
 
-## Coming Soon
-
 ## Description
 
 This GitHub repository contains a Python implementation of the two main algorithms described in the manuscript. 
