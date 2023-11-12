@@ -14,3 +14,15 @@ The second algorithm is called "Stochastic-Coordinate Quantum Natural Gradient" 
 
 ## Installation
 pip install -r requirements.txt
+
+## Instructions
+
+maxcut_optimization.py -- This is the main file. You can choose the type of graph (e.g. regular) and different optimization algorithms.
+
+exact_optimizers.py -- This file contains the different classical optimization algorithms used in the paper (QNG, SC-QNG, RNG and GD).
+
+fisher_information_matrix_circuit.py -- This file constructs the different classical Fisher information matrices and the quantum Fisher information matrix.
+
+problems.py -- This file generates a given MaxCut instance.
+
+quantum_circuit_exact.py -- This file generates the parameterized quantum circuit (details should be given in maxcut_optimization.py)
