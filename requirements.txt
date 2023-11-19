@@ -20,5 +20,5 @@ qiskit_terra==0.16.3
 scipy==1.7.3
 scipy==1.4.1
 scipy==1.5.2
-~iskit_terra==0.21.1
-~umpy==1.18.5
+qiskit_terra==0.21.1
+numpy==1.18.5
