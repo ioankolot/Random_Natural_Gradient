@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.optimize as optimize
 import networkx as nx
-from exact_optimizers import Statevector_Optimizers
+from optimizers import Optimizers
 from problems import MaxCut
 
 seed = 3
@@ -11,10 +11,10 @@ seed = 3
 #Problem properties
 weighted = True
 regularity = 3
-number_of_qubits = 4
+number_of_qubits = 6
 problem = MaxCut(number_of_qubits, regularity=regularity, weighted=weighted, seed=seed)
 optimal_cost, optimal_strings = problem.optimal_cost_brute_force()
-adjacency_matrix = problem.w
+qubitOp, offset = problem.get_qubit_operator()
 
 
 #Properties of the ansatz
@@ -29,9 +29,7 @@ np.random.seed(seed)
 random_basis_layers = 2
 
 
-#There are extra properties on how to calculate the expectation values (i.e. use_shots, number_of_shots) see exact_optimizers.py
-
-
+#There are extra properties on how to calculate the expectation values (i.e. use_shots, number_of_shots) see optimizers.py
 
 print(f'The optimal cost is {optimal_cost} and the strings corresponding to the optimal solution are {optimal_strings}')
 
@@ -43,20 +41,22 @@ reduced_parameters = int(number_of_parameters/2)
 thetas = [np.random.uniform(0, 2*np.pi) for _ in range(number_of_parameters)]
 
 
-optimizer_statevector = Statevector_Optimizers(number_of_qubits, layers, thetas, maxiter, ansatz, single_qubit_gates, entanglement_gates, entanglement,
-                                                problem = {'type':'MaxCut', 'properties':adjacency_matrix})
+optimizer_statevector = Optimizers(number_of_qubits, layers, thetas, maxiter, ansatz, single_qubit_gates, entanglement_gates, entanglement,
+                                                problem = {'type':'MaxCut', 'operator':qubitOp, 'offset':offset})
 
 
 
 #Gradient Descent:
-vanilla_gradient_descent_exp_values = optimizer_statevector.gradient_descent(eta=eta)
+#vanilla_gradient_descent_exp_values = optimizer_statevector.gradient_descent(eta=eta)
 
 #Random Natural Gradient:
-random_natural_gradient_exp_values = optimizer_statevector.natural_gradient_descent(eta=eta, basis='random', random_basis_layers = random_basis_layers)
+#random_natural_gradient_exp_values = optimizer_statevector.random_natural_gradient(eta=eta, basis='random', random_basis_layers = random_basis_layers)
 
 #Quantum Natural Gradient:
-quantum_natural_gradient_exp_values = optimizer_statevector.quantum_natural_gradient(eta=eta)
+#quantum_natural_gradient_exp_values = optimizer_statevector.quantum_natural_gradient(eta=eta)
 
+#Stochastic-Coordinate Quantum Natural Gradient
+scqng_exp_values = optimizer_statevector.stochastic_quantum_natural_gradient(reduced_parameters, eta=eta)
 
 optimal_exp_values = [-optimal_cost for _ in range(maxiter+1)]
 

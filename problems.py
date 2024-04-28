@@ -1,6 +1,7 @@
 import numpy as np
 import networkx as nx
 import collections
+from qiskit_optimization.applications import Maxcut
 
 class MaxCut():
     def __init__(self, size, weighted=False, regularity=None, seed=0, edges=None):
@@ -22,6 +23,14 @@ class MaxCut():
                     if i<j and self.w[i,j] != 0:
                         self.w[i,j] = round(np.random.uniform(0,1), 2)
                         self.w[j,i] = self.w[i,j]
+                        
+    def get_qubit_operator(self):
+        
+        maxcut = Maxcut(self.w)
+        qp = maxcut.to_quadratic_program()
+        qubitOp, offset = qp.to_ising()
+        
+        return qubitOp, offset
 
     def optimal_cost_brute_force(self):
         optimal_cost = 0
