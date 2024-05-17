@@ -5,7 +5,7 @@ Authors: Ioannis Kolotouros and Petros Wallden
 
 ## Description
 
-This GitHub repository contains a Python implementation of the two main algorithms described in the manuscript. 
+This GitHub repository contains a Python implementation of the two main algorithms described in the manuscript. The updated version is now compatible with Qiskit 1.0.0 .
 
 The first algorithm is called "Random Natural Gradient" (RNG) and requires the construction of the random classical Fisher information matrix at every iteration. This matrix then transforms the gradient vector, providing a new direction in the parameterized space that takes information about what is happening locally in the space of quantum states. This method can be considered an approximation to the Quantum Natural Gradient that requires quadratically less quantum resources.
 
