@@ -74,10 +74,12 @@ class Optimizers():
         return exp_values
     
     
-    def random_natural_gradient(self, eta=0.01, basis='random', random_basis_layers=2, rcond=10**-4, shots=None):
+    def random_natural_gradient(self, eta=0.01, basis='random', options = {'random_basis_layers':2, 'single_qubit_gates':['ry'], 'entanglement_gates':['cz'], 'entanglement':'linear'}
+                                ,rcond=10**-4, shots=None):
         
+
         thetas = self.angles.copy()
-        print(f'We begin the optimization using Random Natural Gradient with {random_basis_layers} random layers.')
+        print(f'We begin the optimization using Random Natural Gradient.')
         print(f'with initial expectation value {self.initial_exp_value}')  
         exp_values = [self.initial_exp_value]
         initial_exp_value = self.initial_exp_value
@@ -87,7 +89,7 @@ class Optimizers():
             derivatives = self.calculate_derivatives(thetas, range(len(thetas)), shots)
             CFIM = Classical_Fisher_Information_Matrix(self.number_of_qubits, self.number_of_parameters)
             
-            cfim = CFIM.construct_cfim(ansatz = self.ansatz, basis = basis, random_basis_layers = random_basis_layers, meas_parameters='random',
+            cfim = CFIM.construct_cfim(ansatz = self.ansatz, basis = basis, options = options,
                                        parameters = thetas, single_qubit_gates= self.single_qubit_gates,
                                        entanglement_gates=self.entanglement_gates, entanglement= self.entanglement, reps = self.layers,  shots = shots)
         

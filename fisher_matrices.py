@@ -47,19 +47,20 @@ class Classical_Fisher_Information_Matrix():
         
         
 
-    def construct_cfim(self, ansatz='HEA', basis = 'random', random_basis_layers = 2, meas_parameters = 'random',
+    def construct_cfim(self, ansatz='HEA', basis='random', options = {'random_basis_layers':2, 'single_qubit_gates':['ry'], 'entanglement_gates':['cz'], 'entanglement':'linear'},
                        parameters=None, single_qubit_gates = None, entanglement_gates = None, entanglement = None, reps=None, shots=None):
         
         classical_fisher = np.zeros((self.number_of_parameters, self.number_of_parameters))
-        meas_parameters = [np.random.uniform(0, 2*np.pi) for _ in range((random_basis_layers+1)*self.number_of_qubits)] if meas_parameters=='random' else meas_parameters
         
         if ansatz == 'HEA':
             
             quantum_circuit = TwoLocal(num_qubits=self.number_of_qubits, rotation_blocks=single_qubit_gates, entanglement_blocks=entanglement_gates,
                                        reps = reps, entanglement = entanglement)
             
-        quantum_circuit &= self.choose_measurement_basis(basis, meas_parameters, random_basis_layers)
+        quantum_circuit &= self.choose_measurement_basis(basis, options)
         quantum_circuit.measure_all()
+
+
         sampler = Sampler() if not shots else Sampler(options={'shots':shots})
         probabilities = sampler.run([quantum_circuit], [parameters]).result().quasi_dists[0]
         
@@ -86,7 +87,7 @@ class Classical_Fisher_Information_Matrix():
                     
         return classical_fisher
 
-    def choose_measurement_basis(self, basis, meas_parameters = None, random_basis_layers = None):
+    def choose_measurement_basis(self, basis, options):
 
         qcirc = QuantumCircuit(self.number_of_qubits)
 
@@ -98,7 +99,12 @@ class Classical_Fisher_Information_Matrix():
             qcirc.h(range(self.number_of_qubits))
 
         elif basis == 'random':
-            self.add_random_measurement(meas_parameters, qcirc, random_basis_layers)
+            qcirc &= TwoLocal(num_qubits=self.number_of_qubits, rotation_blocks=options['single_qubit_gates'], entanglement_blocks=options['entanglement_gates'], entanglement=options['entanglement'],
+                              reps = options['random_basis_layers'])
+            
+            meas_parameters = [np.random.uniform() for _ in range(qcirc.num_parameters)]
+
+            qcirc = qcirc.assign_parameters(meas_parameters)
 
         elif basis == 'random_pauli':
             for qubit in range(self.number_of_qubits):
@@ -112,18 +118,3 @@ class Classical_Fisher_Information_Matrix():
 
         return qcirc
     
-    
-    def add_random_measurement(self, meas_parameters, quantum_circuit, layers):
-
-
-        for qubit in range(self.number_of_qubits):
-            quantum_circuit.rx(meas_parameters[qubit], qubit)
-
-        for layer in range(layers):
-            for qubit1 in range(self.number_of_qubits):
-                for qubit2 in range(self.number_of_qubits):
-                    if qubit1<qubit2:
-                        quantum_circuit.cz(qubit1, qubit2)
-
-            for qubit in range(self.number_of_qubits):
-                quantum_circuit.ry(meas_parameters[(layer+1)*self.number_of_qubits + qubit], qubit)

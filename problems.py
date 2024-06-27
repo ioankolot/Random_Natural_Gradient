@@ -55,3 +55,4 @@ class MaxCut():
         costs = sorted(costs.items())
         optimal_strings = costs[-1][1]
         return optimal_cost, optimal_strings
+    

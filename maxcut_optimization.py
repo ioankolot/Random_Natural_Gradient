@@ -7,27 +7,33 @@ from optimizers import Optimizers
 from problems import MaxCut
 
 seed = 3
+np.random.seed(seed)
+
 
 #Problem properties
 weighted = True
 regularity = 3
-number_of_qubits = 6
+number_of_qubits = 8
 problem = MaxCut(number_of_qubits, regularity=regularity, weighted=weighted, seed=seed)
 optimal_cost, optimal_strings = problem.optimal_cost_brute_force()
 qubitOp, offset = problem.get_qubit_operator()
 
 
 #Properties of the ansatz
-layers = 2
+layers = 3
 maxiter = 500
 eta = 0.05
 single_qubit_gates = ['ry', 'rx']
 entanglement_gates = ['cz']
 entanglement = 'linear'
 ansatz = 'HEA'
-np.random.seed(seed)
-random_basis_layers = 2
 
+#Properties of the measurement
+random_basis_layers = 1
+single_qubit_gates_measurement = ['rz', 'ry']
+entanglement_gates_measurement = ['cx']
+entanglement = 'linear'
+options = {'random_basis_layers':random_basis_layers, 'single_qubit_gates':single_qubit_gates_measurement, 'entanglement_gates':entanglement_gates_measurement, 'entanglement':entanglement}
 
 #There are extra properties on how to calculate the expectation values (i.e. use_shots, number_of_shots) see optimizers.py
 
@@ -50,13 +56,13 @@ optimizer_statevector = Optimizers(number_of_qubits, layers, thetas, maxiter, an
 #vanilla_gradient_descent_exp_values = optimizer_statevector.gradient_descent(eta=eta)
 
 #Random Natural Gradient:
-#random_natural_gradient_exp_values = optimizer_statevector.random_natural_gradient(eta=eta, basis='random', random_basis_layers = random_basis_layers)
+random_natural_gradient_exp_values = optimizer_statevector.random_natural_gradient(eta=eta, basis='random', options=options)
 
 #Quantum Natural Gradient:
 #quantum_natural_gradient_exp_values = optimizer_statevector.quantum_natural_gradient(eta=eta)
 
 #Stochastic-Coordinate Quantum Natural Gradient
-scqng_exp_values = optimizer_statevector.stochastic_quantum_natural_gradient(reduced_parameters, eta=eta)
+#scqng_exp_values = optimizer_statevector.stochastic_quantum_natural_gradient(reduced_parameters, eta=eta)
 
 optimal_exp_values = [-optimal_cost for _ in range(maxiter+1)]
 
