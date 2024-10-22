@@ -1,6 +1,6 @@
 # Random Natural Gradient
 
-Qiskit implementation of the paper "Random Natural Gradient" (arXiv:2311.04135).
+Qiskit implementation of the paper "Random Natural Gradient" (Quantum 8, 1503 (2024).).
 Authors: Ioannis Kolotouros and Petros Wallden
 
 ## Description
